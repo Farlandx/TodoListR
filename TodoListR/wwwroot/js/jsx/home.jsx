@@ -82,7 +82,16 @@ var CommentBox = React.createClass({
         xhr.send();
     },
     handleCommentSubmit: function (comment) {
-        // TODO: submit to the server and refresh the list
+        var data = new FormData();
+        data.append('author', comment.author);
+        data.append('text', comment.text);
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('post', this.props.submitUrl, true);
+        xhr.onload = function () {
+            this.loadCommentsFromServer();
+        }.bind(this);
+        xhr.send(data);
     },
     getInitialState: function () {
         return { data: [] };
@@ -103,6 +112,6 @@ var CommentBox = React.createClass({
 });
 
 ReactDOM.render(
-    <CommentBox url="/comments" pollInterval={2000} />,
+    <CommentBox url="/comments" submitUrl="/comments/new" pollInterval={2000} />,
     document.getElementById('content')
 );
