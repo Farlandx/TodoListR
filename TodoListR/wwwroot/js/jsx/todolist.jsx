@@ -1,14 +1,14 @@
 ﻿var data = [
-    { ID: 1, TodoTitle: "起床", IsDone: true },
-    { ID: 2, TodoTitle: "刷牙洗臉", IsDone: false },
-    { ID: 3, TodoTitle: "上班去", IsDone: false }
+    { id: 1, TodoTitle: "起床", IsDone: true },
+    { id: 2, TodoTitle: "刷牙洗臉", IsDone: false },
+    { id: 3, TodoTitle: "上班去", IsDone: false }
 ];
 
 class TodoItem extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            id: props.ID,
+            id: props.id,
             text: props.children.toString(),
             isDone: props.IsDone ? 'checked' : ''
         };
@@ -30,7 +30,7 @@ class TodoItem extends React.Component {
             <li className="todoItem">
                 <label>
                     <input className="todoIsDoneo" name="isDone" type="checkbox" checked={this.state.isDone} onChange={this.handleIsDoneChange} />
-                    <span className="todoID">{this.state.id}</span>
+                    <span className="todoid">{this.state.id}</span>
                     <span className="todoTitle">{this.state.text}</span>
                 </label>
             </li>
@@ -42,7 +42,7 @@ class Todo extends React.Component {
     render() {
         var todoNodes = this.props.data.map(function (todo) {
             return (
-                <TodoItem ID={todo.ID} IsDone={todo.IsDone}>
+                <TodoItem id={todo.id} IsDone={todo.IsDone}>
                     {todo.TodoTitle}
                 </TodoItem>
             );

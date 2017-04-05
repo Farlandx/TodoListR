@@ -6,7 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="wwwroot\js\jsx\home.jsx" />
     <Content Include="wwwroot\js\jsx\todolist.js" />
     <Content Include="wwwroot\js\jsx\todolist.jsx" />
   </ItemGroup>
