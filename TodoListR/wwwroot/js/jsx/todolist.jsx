@@ -1,7 +1,7 @@
 ﻿var data = [
-    { id: 1, TodoTitle: "起床", IsDone: true },
-    { id: 2, TodoTitle: "刷牙洗臉", IsDone: false },
-    { id: 3, TodoTitle: "上班去", IsDone: false }
+    { id: 1, todoTitle: "起床", isDone: true },
+    { id: 2, todoTitle: "刷牙洗臉", isDone: false },
+    { id: 3, todoTitle: "上班去", isDone: false }
 ];
 
 class TodoItem extends React.Component {
@@ -42,8 +42,8 @@ class Todo extends React.Component {
     render() {
         var todoNodes = this.props.data.map(function (todo) {
             return (
-                <TodoItem id={todo.id} IsDone={todo.IsDone}>
-                    {todo.TodoTitle}
+                <TodoItem id={todo.id} IsDone={todo.isDone}>
+                    {todo.todoTitle}
                 </TodoItem>
             );
         });
@@ -56,17 +56,36 @@ class Todo extends React.Component {
 };
 
 class TodoBox extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { data: [] };
+    }
+
+    loadTodoFromServer() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('get', this.props.apiUrl, true);
+        xhr.onload = function () {
+            var data = JSON.parse(xhr.responseText);
+            this.setState({ data: data });
+        }.bind(this);
+        xhr.send();
+    }
+
+    componentDidMount() {
+        this.loadTodoFromServer();
+    }
+
     render() {
         return (
             <div className="todoBox">
                 <h1>待辦事項</h1>
-                <Todo data={this.props.data} />
+                <Todo data={this.state.data} />
             </div>
         );
     }
 };
 
 ReactDOM.render(
-    <TodoBox data={data} />,
+    <TodoBox apiUrl="/api/Todos" />,
     document.getElementById('content')
 );
