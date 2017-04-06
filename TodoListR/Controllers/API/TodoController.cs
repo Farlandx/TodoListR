@@ -21,7 +21,7 @@ namespace TodoListR.Controllers.API
                 {
                     id = 1,
                     TodoTitle = "°_§É",
-                    IsDone = false
+                    IsDone = true
                 },
                 new TodoModel()
                 {
@@ -46,9 +46,51 @@ namespace TodoListR.Controllers.API
         }
 
         [HttpGet("api/Todos")]
-        public JsonResult TodoList()
+        public JsonResult GetTodoList()
         {
             return Json(_todolist);
+        }
+
+        [HttpPost("api/Todo")]
+        public bool CreateTodo(TodoModel todo)
+        {
+            if (string.IsNullOrEmpty(todo.TodoTitle))
+            {
+                return false;
+            }
+
+            todo.id = _todolist.Count() + 1;
+            _todolist.Add(todo);
+
+            return true;
+        }
+
+        [HttpPut("api/Todo")]
+        public bool UpdateTodo(TodoModel todo)
+        {
+            if (string.IsNullOrEmpty(todo.TodoTitle))
+            {
+                return false;
+            }
+
+            var t = _todolist.FirstOrDefault(x => x.id == todo.id);
+
+            t.TodoTitle = todo.TodoTitle;
+            t.IsDone = todo.IsDone;
+
+            return true;
+        }
+
+        [HttpDelete("api/Todo")]
+        public bool DeleteTodo(int id)
+        {
+            var t = _todolist.FirstOrDefault(x => x.id == id);
+            if (t == null)
+            {
+                return false;
+            }
+
+            return _todolist.Remove(t);
         }
     }
 }
