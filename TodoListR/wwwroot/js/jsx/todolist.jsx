@@ -55,6 +55,55 @@ class Todo extends React.Component {
     };
 };
 
+
+class NewTodo extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { id: null, todoTitle: '', isDone: false };
+        this.handleDataChange = this.handleDataChange.bind(this);
+        this.handleSendClick = this.handleSendClick.bind(this);
+    }
+
+    componentDidUpdate() {
+    }
+
+    sendData() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('post', this.props.apiUrl, true);
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.onload = function () {
+            if (xhr.responseText) {
+                this.setState({ todoTitle: '', isDone: false });
+            }
+        }.bind(this);
+        xhr.send(JSON.stringify(this.state));
+    }
+
+    handleDataChange(event) {
+        const target = event.target;
+        const value = target.type === 'checkbox' ? target.checked : target.value;
+        const name = target.name;
+        this.setState({
+            [name]: value
+        });
+    }
+
+    handleSendClick() {
+        this.sendData();
+    }
+
+    render() {
+        return (
+            <div className="newTodo">
+                <input type="text" placeholder="請輸入待辦事項" name="todoTitle" onChange={this.handleDataChange} />
+                <input type="checkbox" name="isDone" onChange={this.handleDataChange} />
+                <button onClick={this.handleSendClick}>送出</button>
+            </div>
+        );
+    }
+}
+
+
 class TodoBox extends React.Component {
     constructor(props) {
         super(props);
@@ -63,7 +112,7 @@ class TodoBox extends React.Component {
 
     loadTodoFromServer() {
         var xhr = new XMLHttpRequest();
-        xhr.open('get', this.props.apiUrl, true);
+        xhr.open('get', this.props.apiGetListUrl, true);
         xhr.onload = function () {
             var data = JSON.parse(xhr.responseText);
             this.setState({ data: data });
@@ -80,12 +129,13 @@ class TodoBox extends React.Component {
             <div className="todoBox">
                 <h1>待辦事項</h1>
                 <Todo data={this.state.data} />
+                <NewTodo apiUrl={this.props.apiUrl} />
             </div>
         );
     }
 };
 
 ReactDOM.render(
-    <TodoBox apiUrl="/api/Todos" />,
+    <TodoBox apiGetListUrl="/api/Todos" apiUrl="/api/Todo" />,
     document.getElementById('content')
 );
