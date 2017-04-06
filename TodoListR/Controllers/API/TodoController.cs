@@ -19,19 +19,19 @@ namespace TodoListR.Controllers.API
             {
                 new TodoModel()
                 {
-                    id = 1,
+                    Id = 1,
                     TodoTitle = "°_§É",
                     IsDone = true
                 },
                 new TodoModel()
                 {
-                    id = 2,
+                    Id = 2,
                     TodoTitle = "¨ê¤ú¬~Áy",
                     IsDone = false
                 },
                 new TodoModel()
                 {
-                    id = 3,
+                    Id = 3,
                     TodoTitle = "¤W¯Z¥h",
                     IsDone = false
                 }
@@ -41,7 +41,7 @@ namespace TodoListR.Controllers.API
         [HttpGet("api/Todo/{id:int}")]
         public TodoModel Index(int? id)
         {
-            var todo = _todolist.FirstOrDefault<TodoModel>(x => x.id == id);
+            var todo = _todolist.FirstOrDefault<TodoModel>(x => x.Id == id);
             return todo;
         }
 
@@ -52,17 +52,21 @@ namespace TodoListR.Controllers.API
         }
 
         [HttpPost("api/Todo")]
-        public bool CreateTodo(TodoModel todo)
+        public ApiResultModel CreateTodo([FromBody]TodoModel todo)
         {
+            var result = new ApiResultModel() { Success = false };
             if (string.IsNullOrEmpty(todo.TodoTitle))
             {
-                return false;
+                return result;
             }
 
-            todo.id = _todolist.Count() + 1;
+            todo.Id = DateTime.Now.Ticks;
             _todolist.Add(todo);
 
-            return true;
+            result.Success = true;
+            result.data = todo;
+
+            return result;
         }
 
         [HttpPut("api/Todo")]
@@ -73,7 +77,7 @@ namespace TodoListR.Controllers.API
                 return false;
             }
 
-            var t = _todolist.FirstOrDefault(x => x.id == todo.id);
+            var t = _todolist.FirstOrDefault(x => x.Id == todo.Id);
 
             t.TodoTitle = todo.TodoTitle;
             t.IsDone = todo.IsDone;
@@ -84,7 +88,7 @@ namespace TodoListR.Controllers.API
         [HttpDelete("api/Todo")]
         public bool DeleteTodo(int id)
         {
-            var t = _todolist.FirstOrDefault(x => x.id == id);
+            var t = _todolist.FirstOrDefault(x => x.Id == id);
             if (t == null)
             {
                 return false;

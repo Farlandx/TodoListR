@@ -7,7 +7,7 @@ namespace TodoListR.Models
 {
     public class TodoModel
     {
-        public int id { get; set; }
+        public long? Id { get; set; }
         public string TodoTitle { get; set; }
         public bool IsDone { get; set; }
     }
