@@ -70,7 +70,7 @@ namespace TodoListR.Controllers.API
         }
 
         [HttpPut("api/Todo")]
-        public bool UpdateTodo(TodoModel todo)
+        public bool UpdateTodo([FromBody]TodoModel todo)
         {
             if (string.IsNullOrEmpty(todo.TodoTitle))
             {

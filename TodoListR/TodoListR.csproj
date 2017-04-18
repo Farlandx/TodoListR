@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot/js\jsx\klppw2bz.smj~" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="wwwroot\js\jsx\todolist.js" />
     <Content Include="wwwroot\js\jsx\todolist.jsx" />
   </ItemGroup>
