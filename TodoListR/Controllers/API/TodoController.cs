@@ -20,19 +20,19 @@ namespace TodoListR.Controllers.API
                 new TodoModel()
                 {
                     Id = 1,
-                    TodoTitle = "°_§É",
+                    TodoTitle = "Todo 1",
                     IsDone = true
                 },
                 new TodoModel()
                 {
                     Id = 2,
-                    TodoTitle = "¨ê¤ú¬~Áy",
+                    TodoTitle = "Todo 2",
                     IsDone = false
                 },
                 new TodoModel()
                 {
                     Id = 3,
-                    TodoTitle = "¤W¯Z¥h",
+                    TodoTitle = "Todo 3",
                     IsDone = false
                 }
             };

@@ -30,7 +30,6 @@ class TodoItem extends React.Component {
             <li className="todoItem">
                 <label>
                     <input className="todoIsDoneo" name="isDone" type="checkbox" checked={this.state.isDone} onChange={this.handleIsDoneChange} />
-                    <span className="todoid">{this.state.id}</span>
                     <span className="todoTitle">{this.state.text}</span>
                 </label>
             </li>
@@ -62,6 +61,11 @@ class NewTodo extends React.Component {
         this.state = { id: null, todoTitle: '', isDone: false };
         this.handleDataChange = this.handleDataChange.bind(this);
         this.handleSendClick = this.handleSendClick.bind(this);
+        this.handleClearClick = this.handleClearClick.bind(this);
+    }
+
+    initState() {
+        this.setState({ id: null, todoTitle: '', isDone: false });
     }
 
     componentDidUpdate() {
@@ -69,7 +73,7 @@ class NewTodo extends React.Component {
 
     onSent(todo) {
         this.props.onSent(todo);
-        this.setState({ id: null, todoTitle: '', isDone: false });
+        this.initState();
     }
 
     sendData() {
@@ -98,12 +102,17 @@ class NewTodo extends React.Component {
         this.sendData();
     }
 
+    handleClearClick() {
+        this.initState();
+    };
+
     render() {
         return (
             <div className="newTodo">
-                <input type="text" placeholder="請輸入待辦事項" name="todoTitle" onChange={this.handleDataChange} />
-                <input type="checkbox" name="isDone" onChange={this.handleDataChange} />
+                <input type="text" placeholder="請輸入待辦事項" name="todoTitle" value={this.state.todoTitle} onChange={this.handleDataChange} />
+                <input type="checkbox" name="isDone" checked={this.state.isDone} onChange={this.handleDataChange} />
                 <button onClick={this.handleSendClick}>送出</button>
+                <button onClick={this.handleClearClick}>Clear</button>
             </div>
         );
     }
