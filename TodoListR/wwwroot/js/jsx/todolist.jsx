@@ -30,14 +30,13 @@ class TodoItem extends React.Component {
         super(props);
         this.state = {
             id: props.id,
-            text: props.children.toString(),
-            isDone: props.IsDone ? 'checked' : ''
+            todoTitle: props.children.toString(),
+            isDone: props.IsDone
         };
-
         this.handleIsDoneChange = this.handleIsDoneChange.bind(this);
     }
 
-    handleIsDoneChange(event) {
+    isDoneChange(event) {
         const target = event.target;
         const value = target.type === 'checkbox' ? target.checked : target.value;
         const name = target.name;
@@ -46,12 +45,18 @@ class TodoItem extends React.Component {
         });
     }
 
+    handleIsDoneChange(event) {
+        var data = this.state;
+        data.isDone = event.target.checked;
+        this.props.checkboxOnClick(data, this.isDoneChange, event);
+    }
+
     render() {
         return (
             <li className="todoItem">
                 <label>
                     <input className="todoIsDoneo" name="isDone" type="checkbox" checked={this.state.isDone} onChange={this.handleIsDoneChange} />
-                    <span className="todoTitle">{this.state.text}</span>
+                    <span className="todoTitle">{this.state.todoTitle}</span>
                 </label>
             </li>
         );
@@ -59,10 +64,28 @@ class TodoItem extends React.Component {
 };
 
 class Todo extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
     render() {
+        var apiUrl = this.props.apiUrl;
         var todoNodes = this.props.data.map(function (todo) {
             return (
-                <TodoItem id={todo.id} IsDone={todo.isDone}>
+                <TodoItem id={todo.id} IsDone={todo.isDone} checkboxOnClick={(value, callback, event) => {
+                    var data = JSON.stringify(value);
+                    var e = event;
+                    var api = new TodoAPI(apiUrl, 'put', data, (result, event) => {
+                        if (result) {
+                            // #Todo: 還沒完成
+                            callback(this.data);
+                        }
+                        else {
+                            console.log('Error');
+                        }
+                    });
+                    var result = api.SendAjax();
+                }}>
                     {todo.todoTitle}
                 </TodoItem>
             );
@@ -163,7 +186,7 @@ class TodoBox extends React.Component {
         return (
             <div className="todoApp">
                 <h1>待辦事項</h1>
-                <Todo data={this.state.data} />
+                <Todo apiUrl={this.props.apiUrl} data={this.state.data} />
                 <NewTodo apiUrl={this.props.apiUrl} onSent={this.onTodoAdded} />
             </div>
         );
