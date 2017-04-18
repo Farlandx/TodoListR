@@ -4,6 +4,27 @@
     { id: 3, todoTitle: "上班去", isDone: false }
 ];
 
+class TodoAPI {
+    constructor(apiUrl, httpMethod, data, callback) {
+        this.apiUrl = apiUrl;
+        this.httpMethod = httpMethod;
+        this.data = data;
+        this.callback = callback;
+    }
+
+    SendAjax() {
+        var xhr = new XMLHttpRequest();
+        xhr.open(this.httpMethod, this.apiUrl, true);
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.onload = function () {
+            var result = JSON.parse(xhr.responseText);
+            this.callback(result);
+        }.bind(this);
+        xhr.send(this.data);
+    }
+}
+
+
 class TodoItem extends React.Component {
     constructor(props) {
         super(props);
@@ -71,22 +92,16 @@ class NewTodo extends React.Component {
     componentDidUpdate() {
     }
 
-    onSent(todo) {
-        this.props.onSent(todo);
-        this.initState();
+    onSent(value) {
+        if (value.success) {
+            this.props.onSent(value.data);
+            this.initState();
+        }
     }
 
     sendData() {
-        var xhr = new XMLHttpRequest();
-        xhr.open('post', this.props.apiUrl, true);
-        xhr.setRequestHeader("Content-type", "application/json");
-        xhr.onload = function () {
-            var result = JSON.parse(xhr.responseText);
-            if (result.success) {
-                this.onSent(result.data);
-            }
-        }.bind(this);
-        xhr.send(JSON.stringify(this.state));
+        var api = new TodoAPI(this.props.apiUrl, 'post', JSON.stringify(this.state), this.onSent.bind(this));
+        api.SendAjax();
     }
 
     handleDataChange(event) {
@@ -126,14 +141,13 @@ class TodoBox extends React.Component {
         this.onTodoAdded = this.onTodoAdded.bind(this);
     }
 
+    initData(data) {
+        this.setState({ data: data });
+    }
+
     loadTodoFromServer() {
-        var xhr = new XMLHttpRequest();
-        xhr.open('get', this.props.apiGetListUrl, true);
-        xhr.onload = function () {
-            var data = JSON.parse(xhr.responseText);
-            this.setState({ data: data });
-        }.bind(this);
-        xhr.send();
+        var api = new TodoAPI(this.props.apiGetListUrl, 'get', null, this.initData.bind(this));
+        api.SendAjax();
     }
 
     componentDidMount() {
