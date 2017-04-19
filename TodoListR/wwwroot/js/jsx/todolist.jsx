@@ -131,6 +131,7 @@ class NewTodo extends React.Component {
         this.handleDataChange = this.handleDataChange.bind(this);
         this.handleSendClick = this.handleSendClick.bind(this);
         this.handleClearClick = this.handleClearClick.bind(this);
+        this.handleInputKeyUp = this.handleInputKeyUp.bind(this);
     }
 
     initState() {
@@ -148,6 +149,9 @@ class NewTodo extends React.Component {
     }
 
     sendData() {
+        if (this.state.todoTitle.length === 0) {
+            return;
+        }
         var api = new TodoAPI(this.props.apiUrl, 'post', JSON.stringify(this.state), this.onSent.bind(this));
         api.SendAjax();
     }
@@ -167,12 +171,19 @@ class NewTodo extends React.Component {
 
     handleClearClick() {
         this.initState();
-    };
+    }
+
+    handleInputKeyUp(event) {
+        //enter
+        if (event.keyCode === 13) {
+            this.sendData();
+        }
+    }
 
     render() {
         return (
             <div className="newTodo">
-                <input type="text" placeholder="請輸入待辦事項" name="todoTitle" value={this.state.todoTitle} onChange={this.handleDataChange} />
+                <input type="text" placeholder="請輸入待辦事項" name="todoTitle" value={this.state.todoTitle} onChange={this.handleDataChange} onKeyUp={this.handleInputKeyUp} />
                 <input type="checkbox" name="isDone" checked={this.state.isDone} onChange={this.handleDataChange} />
                 <button onClick={this.handleSendClick}>送出</button>
                 <button onClick={this.handleClearClick}>Clear</button>
