@@ -25,7 +25,7 @@ class TodoAPI {
         xhr.send(this.data);
     }
 
-    SendAsync() {
+    SendPromise() {
         return new Promise((resolve, reject) => {
             let xhr = new XMLHttpRequest();
             xhr.open(this.httpMethod, this.apiUrl, true);
@@ -105,7 +105,7 @@ class Todo extends React.Component {
                     let data = JSON.stringify(value);
                     let api = new TodoAPI(apiUrl, 'put', data, null);
 
-                    api.SendAsync().then((result) => {
+                    api.SendPromise().then((result) => {
                         if (result) {
                             callback(this.event);
                         }
@@ -210,7 +210,7 @@ class TodoBox extends React.Component {
     render() {
         return (
             <div className="todoApp">
-                <h1>待辦事項</h1>
+                <h1>Todo List</h1>
                 <Todo apiUrl={this.props.apiUrl} data={this.state.data} />
                 <NewTodo apiUrl={this.props.apiUrl} onSent={this.onTodoAdded} />
             </div>

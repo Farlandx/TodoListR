@@ -12,6 +12,7 @@ namespace TodoListR.Controllers.API
     public class TodoController : Controller
     {
         private static readonly IList<TodoModel> _todolist;
+        private static int _idCounter = 4;
 
         static TodoController()
         {
@@ -39,7 +40,7 @@ namespace TodoListR.Controllers.API
         }
 
         [HttpGet("api/Todo/{id:int}")]
-        public TodoModel Index(int? id)
+        public TodoModel Index(int id)
         {
             var todo = _todolist.FirstOrDefault<TodoModel>(x => x.Id == id);
             return todo;
@@ -55,12 +56,12 @@ namespace TodoListR.Controllers.API
         public ApiResultModel CreateTodo([FromBody]TodoModel todo)
         {
             var result = new ApiResultModel() { Success = false };
-            if (string.IsNullOrEmpty(todo.TodoTitle))
+            if (todo == null || string.IsNullOrEmpty(todo.TodoTitle))
             {
                 return result;
             }
 
-            todo.Id = DateTime.Now.Ticks;
+            todo.Id = _idCounter++;
             _todolist.Add(todo);
 
             result.Success = true;
@@ -72,7 +73,7 @@ namespace TodoListR.Controllers.API
         [HttpPut("api/Todo")]
         public bool UpdateTodo([FromBody]TodoModel todo)
         {
-            if (string.IsNullOrEmpty(todo.TodoTitle))
+            if (todo == null || string.IsNullOrEmpty(todo.TodoTitle))
             {
                 return false;
             }
