@@ -13,14 +13,42 @@ class TodoAPI {
     }
 
     SendAjax() {
-        var xhr = new XMLHttpRequest();
+        let xhr = new XMLHttpRequest();
         xhr.open(this.httpMethod, this.apiUrl, true);
         xhr.setRequestHeader("Content-type", "application/json");
         xhr.onload = function () {
-            var result = JSON.parse(xhr.responseText);
-            this.callback(result);
+            if (xhr.status >= 200 && xhr.status < 300) {
+                var result = JSON.parse(xhr.responseText);
+                this.callback(result);
+            }
         }.bind(this);
         xhr.send(this.data);
+    }
+
+    SendAsync() {
+        return new Promise((resolve, reject) => {
+            let xhr = new XMLHttpRequest();
+            xhr.open(this.httpMethod, this.apiUrl, true);
+            xhr.setRequestHeader("Content-type", "application/json");
+            xhr.onload = function () {
+                if (this.status >= 200 && this.status < 300) {
+                    var result = JSON.parse(xhr.responseText);
+                    resolve(result);
+                } else {
+                    reject({
+                        status: this.status,
+                        statusText: xhr.statusText
+                    });
+                }
+            };
+            xhr.onerror = function () {
+                reject({
+                    status: this.status,
+                    statusText: xhr.statusText
+                });
+            };
+            xhr.send(this.data);
+        });
     }
 }
 
@@ -48,7 +76,8 @@ class TodoItem extends React.Component {
     handleIsDoneChange(event) {
         var data = this.state;
         data.isDone = event.target.checked;
-        this.props.checkboxOnClick(data, this.isDoneChange, event);
+        this.event = event;
+        this.props.checkboxOnClick(data, this.isDoneChange.bind(this));
     }
 
     render() {
@@ -72,19 +101,15 @@ class Todo extends React.Component {
         var apiUrl = this.props.apiUrl;
         var todoNodes = this.props.data.map(function (todo) {
             return (
-                <TodoItem id={todo.id} IsDone={todo.isDone} checkboxOnClick={(value, callback, event) => {
-                    var data = JSON.stringify(value);
-                    var e = event;
-                    var api = new TodoAPI(apiUrl, 'put', data, (result, event) => {
+                <TodoItem id={todo.id} IsDone={todo.isDone} checkboxOnClick={(value, callback) => {
+                    let data = JSON.stringify(value);
+                    let api = new TodoAPI(apiUrl, 'put', data, null);
+
+                    api.SendAsync().then((result) => {
                         if (result) {
-                            // #Todo: 還沒完成
-                            callback(this.data);
-                        }
-                        else {
-                            console.log('Error');
+                            callback(this.event);
                         }
                     });
-                    var result = api.SendAjax();
                 }}>
                     {todo.todoTitle}
                 </TodoItem>
