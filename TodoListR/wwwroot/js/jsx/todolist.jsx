@@ -1,10 +1,4 @@
-﻿var data = [
-    { id: 1, todoTitle: "起床", isDone: true },
-    { id: 2, todoTitle: "刷牙洗臉", isDone: false },
-    { id: 3, todoTitle: "上班去", isDone: false }
-];
-
-class TodoAPI {
+﻿class TodoAPI {
     constructor(apiUrl, httpMethod, data, callback) {
         this.apiUrl = apiUrl;
         this.httpMethod = httpMethod;
@@ -18,8 +12,10 @@ class TodoAPI {
         xhr.setRequestHeader("Content-type", "application/json");
         xhr.onload = function () {
             if (xhr.status >= 200 && xhr.status < 300) {
-                var result = JSON.parse(xhr.responseText);
-                this.callback(result);
+                const result = JSON.parse(xhr.responseText);
+                if (this.callback) {
+                    this.callback(result);
+                }
             }
         }.bind(this);
         xhr.send(this.data);
@@ -32,7 +28,7 @@ class TodoAPI {
             xhr.setRequestHeader("Content-type", "application/json");
             xhr.onload = function () {
                 if (this.status >= 200 && this.status < 300) {
-                    var result = JSON.parse(xhr.responseText);
+                    const result = JSON.parse(xhr.responseText);
                     resolve(result);
                 } else {
                     reject({
@@ -62,7 +58,17 @@ class TodoItem extends React.Component {
             isDone: props.IsDone
         };
         this.handleIsDoneChange = this.handleIsDoneChange.bind(this);
+        this.handleTodoDelete = this.handleTodoDelete.bind(this);
     }
+
+    componentWillReceiveProps(nextProps) {
+        this.state = {
+            id: nextProps.id,
+            todoTitle: nextProps.children.toString(),
+            isDone: nextProps.IsDone
+        };
+    }
+
 
     isDoneChange(event) {
         const target = event.target;
@@ -80,6 +86,10 @@ class TodoItem extends React.Component {
         this.props.checkboxOnClick(data, this.isDoneChange.bind(this));
     }
 
+    handleTodoDelete(event) {
+        this.props.crossMarkOnClick();
+    }
+
     render() {
         return (
             <li className="todoItem">
@@ -87,6 +97,7 @@ class TodoItem extends React.Component {
                     <input className="todoIsDoneo" name="isDone" type="checkbox" checked={this.state.isDone} onChange={this.handleIsDoneChange} />
                     <span className="todoTitle">{this.state.todoTitle}</span>
                 </label>
+                <span className="todoDelete" onClick={this.handleTodoDelete}>&#x274c;</span>
             </li>
         );
     };
@@ -95,26 +106,40 @@ class TodoItem extends React.Component {
 class Todo extends React.Component {
     constructor(props) {
         super(props);
+        this.crossMarkOnClick = this.crossMarkOnClick.bind(this);
+    }
+
+    crossMarkOnClick(todo) {
+        const api = new TodoAPI(this.props.apiUrl, 'delete', todo.id, null);
+        api.SendPromise().then(result => {
+            if (result) {
+                this.props.onDelete(todo);
+            }
+        });
     }
 
     render() {
-        var apiUrl = this.props.apiUrl;
+        const apiUrl = this.props.apiUrl;
         var todoNodes = this.props.data.map(function (todo) {
             return (
-                <TodoItem id={todo.id} IsDone={todo.isDone} checkboxOnClick={(value, callback) => {
-                    let data = JSON.stringify(value);
-                    let api = new TodoAPI(apiUrl, 'put', data, null);
+                <TodoItem id={todo.id} IsDone={todo.isDone}
+                    crossMarkOnClick={() => {
+                        this.crossMarkOnClick(todo);
+                    }}
+                    checkboxOnClick={(value, callback) => {
+                        const data = JSON.stringify(value);
+                        const api = new TodoAPI(apiUrl, 'put', data, null);
 
-                    api.SendPromise().then((result) => {
-                        if (result) {
-                            callback(this.event);
-                        }
-                    });
-                }}>
+                        api.SendPromise().then(result => {
+                            if (result) {
+                                callback(event);
+                            }
+                        });
+                    }}>
                     {todo.todoTitle}
                 </TodoItem>
             );
-        });
+        }, this);
         return (
             <ul className="todo">
                 {todoNodes}
@@ -152,7 +177,7 @@ class NewTodo extends React.Component {
         if (this.state.todoTitle.length === 0) {
             return;
         }
-        var api = new TodoAPI(this.props.apiUrl, 'post', JSON.stringify(this.state), this.onSent.bind(this));
+        const api = new TodoAPI(this.props.apiUrl, 'post', JSON.stringify(this.state), this.onSent.bind(this));
         api.SendAjax();
     }
 
@@ -198,6 +223,7 @@ class TodoBox extends React.Component {
         super(props);
         this.state = { data: [] };
         this.onTodoAdded = this.onTodoAdded.bind(this);
+        this.onDelete = this.onDelete.bind(this);
     }
 
     initData(data) {
@@ -205,7 +231,7 @@ class TodoBox extends React.Component {
     }
 
     loadTodoFromServer() {
-        var api = new TodoAPI(this.props.apiGetListUrl, 'get', null, this.initData.bind(this));
+        const api = new TodoAPI(this.props.apiGetListUrl, 'get', null, this.initData.bind(this));
         api.SendAjax();
     }
 
@@ -218,11 +244,19 @@ class TodoBox extends React.Component {
         this.setState(this.state);
     }
 
+    onDelete(todo) {
+        const index = this.state.data.indexOf(todo);
+        if (index > -1) {
+            this.state.data.splice(index, 1);
+            this.setState(this.state);
+        }
+    }
+
     render() {
         return (
             <div className="todoApp">
                 <h1>Todo List</h1>
-                <Todo apiUrl={this.props.apiUrl} data={this.state.data} />
+                <Todo apiUrl={this.props.apiUrl} data={this.state.data} onDelete={this.onDelete} />
                 <NewTodo apiUrl={this.props.apiUrl} onSent={this.onTodoAdded} />
             </div>
         );

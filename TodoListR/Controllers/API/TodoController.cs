@@ -87,7 +87,7 @@ namespace TodoListR.Controllers.API
         }
 
         [HttpDelete("api/Todo")]
-        public bool DeleteTodo(int id)
+        public bool DeleteTodo([FromBody]int id)
         {
             var t = _todolist.FirstOrDefault(x => x.Id == id);
             if (t == null)
