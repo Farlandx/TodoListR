@@ -6,7 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="wwwroot\js\jsx\home.jsx" />
+    <Content Remove="wwwroot/js\jsx\klppw2bz.smj~" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="wwwroot\js\jsx\todolist.js" />
+    <Content Include="wwwroot\js\jsx\todolist.jsx" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.0.0" />
