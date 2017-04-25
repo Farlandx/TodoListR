@@ -61,14 +61,14 @@ class TodoItem extends React.Component {
         this.handleTodoDelete = this.handleTodoDelete.bind(this);
     }
 
-    componentWillReceiveProps(nextProps) {
-        this.state = {
-            id: nextProps.id,
-            todoTitle: nextProps.children.toString(),
-            isDone: nextProps.IsDone
-        };
-    }
-
+    //加入Key屬性後就不需要做componentWillReceiveProps
+    //componentWillReceiveProps(nextProps) {
+    //    this.state = {
+    //        id: nextProps.id,
+    //        todoTitle: nextProps.children.toString(),
+    //        isDone: nextProps.IsDone
+    //    };
+    //}
 
     isDoneChange(event) {
         const target = event.target;
@@ -122,7 +122,10 @@ class Todo extends React.Component {
         const apiUrl = this.props.apiUrl;
         var todoNodes = this.props.data.map(function (todo) {
             return (
-                <TodoItem id={todo.id} IsDone={todo.isDone}
+                /* key屬性是為了讓React操作動態物件時，可以明確知道對像
+                 * 這裡如果不加的話做刪除時，redraw會看到最後一筆刪掉，而實際上目標是有被正確刪除的
+                 */
+                <TodoItem key={todo.id} id={todo.id} IsDone={todo.isDone}
                     crossMarkOnClick={() => {
                         this.crossMarkOnClick(todo);
                     }}
