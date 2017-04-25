@@ -57,8 +57,12 @@ class TodoItem extends React.Component {
             todoTitle: props.children.toString(),
             isDone: props.IsDone
         };
-        this.handleIsDoneChange = this.handleIsDoneChange.bind(this);
+        this.handleTodoOnChange = this.handleTodoOnChange.bind(this);
         this.handleTodoDelete = this.handleTodoDelete.bind(this);
+        this.handleInputKeyUp = this.handleInputKeyUp.bind(this);
+        this.objectOnChanged = this.objectOnChanged.bind(this);
+        this.handleTitleOnFocus = this.handleTitleOnFocus.bind(this);
+        this.handleInputOnBlur = this.handleInputOnBlur.bind(this);
     }
 
     //加入Key屬性後就不需要做componentWillReceiveProps
@@ -70,7 +74,7 @@ class TodoItem extends React.Component {
     //    };
     //}
 
-    isDoneChange(event) {
+    objectOnChanged(event) {
         const target = event.target;
         const value = target.type === 'checkbox' ? target.checked : target.value;
         const name = target.name;
@@ -79,23 +83,53 @@ class TodoItem extends React.Component {
         });
     }
 
-    handleIsDoneChange(event) {
+    handleTodoOnChange(event) {
         var data = this.state;
         data.isDone = event.target.checked;
         this.event = event;
-        this.props.checkboxOnClick(data, this.isDoneChange.bind(this));
+        this.props.todoItemOnChange(data, this.objectOnChanged);
     }
 
     handleTodoDelete(event) {
         this.props.crossMarkOnClick();
     }
 
+    handleTitleOnFocus(event) {
+        this.tmpText = event.target.value;
+    }
+
+    handleInputOnBlur(event) {
+        this.setState({ todoTitle: this.tmpText });
+    }
+
+    handleInputKeyUp(event) {
+        const value = event.target.value;
+        //enter
+        if (event.keyCode === 13 && value.length > 0) {
+            //如果數值沒變就不call API
+            if (value === this.tmpText) {
+                event.target.blur();
+                return;
+            }
+            var data = this.state;
+            data.todoTitle = value;
+            this.props.todoItemOnChange(data, ((target, value) => {
+                this.tmpText = value;
+                target.blur();
+            }).bind(this, event.target, value));
+        }
+        //escape
+        else if (event.keyCode === 27) {
+            event.target.blur();
+        }
+    }
+
     render() {
         return (
             <li className="todoItem">
                 <label>
-                    <input className="todoIsDoneo" name="isDone" type="checkbox" checked={this.state.isDone} onChange={this.handleIsDoneChange} />
-                    <span className="todoTitle">{this.state.todoTitle}</span>
+                    <input className="todoIsDone" name="isDone" type="checkbox" checked={this.state.isDone} onChange={this.handleTodoOnChange} />
+                    <input className="todoTitle" name="todoTitle" type="text" value={this.state.todoTitle} onKeyUp={this.handleInputKeyUp} onChange={this.objectOnChanged} onFocus={this.handleTitleOnFocus} onBlur={this.handleInputOnBlur} />
                 </label>
                 <span className="todoDelete" onClick={this.handleTodoDelete}>&#x274c;</span>
             </li>
@@ -129,12 +163,12 @@ class Todo extends React.Component {
                     crossMarkOnClick={() => {
                         this.crossMarkOnClick(todo);
                     }}
-                    checkboxOnClick={(value, callback) => {
+                    todoItemOnChange={(value, callback) => {
                         const data = JSON.stringify(value);
                         const api = new TodoAPI(apiUrl, 'put', data, null);
 
                         api.SendPromise().then(result => {
-                            if (result) {
+                            if (result && callback) {
                                 callback(event);
                             }
                         });
