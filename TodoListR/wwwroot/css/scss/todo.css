@@ -1,0 +1,49 @@
+﻿html, body {
+  background-color: #fff;
+  font-family: Microsoft JhengHei, sans-serif;
+  font-size: 14px; }
+
+#content {
+  width: 400px;
+  margin: 0 auto; }
+
+h1.todoTitle {
+  font-family: sans-serif; }
+
+ul {
+  margin: 0;
+  padding: 0; }
+  ul.todo li {
+    list-style: none; }
+    ul.todo li.todoItem {
+      margin-bottom: 5px; }
+    ul.todo li:last-child > input.todoTitle {
+      border-bottom: 2px solid #555; }
+
+input[type="checkbox"]:hover, .todoDelete:hover, button:hover {
+  cursor: pointer; }
+
+button {
+  min-width: 50px;
+  min-height: 30px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  border-radius: 5px; }
+  button:focus {
+    outline: none; }
+
+input.todoTitle {
+  border: none;
+  border-bottom: 1px dotted #555;
+  font-size: 14px;
+  width: 300px; }
+  input.todoTitle:focus {
+    outline: none; }
+
+div.newTodoBottom {
+  margin-top: 5px;
+  align-content: center; }
+  div.newTodoBottom > button {
+    margin: 5px; }
+

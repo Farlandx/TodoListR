@@ -127,10 +127,8 @@ class TodoItem extends React.Component {
     render() {
         return (
             <li className="todoItem">
-                <label>
-                    <input className="todoIsDone" name="isDone" type="checkbox" checked={this.state.isDone} onChange={this.handleTodoOnChange} />
-                    <input className="todoTitle" name="todoTitle" type="text" value={this.state.todoTitle} onKeyUp={this.handleInputKeyUp} onChange={this.objectOnChanged} onFocus={this.handleTitleOnFocus} onBlur={this.handleInputOnBlur} />
-                </label>
+                <input className="todoIsDone" name="isDone" type="checkbox" checked={this.state.isDone} onChange={this.handleTodoOnChange} />
+                <input className="todoTitle" name="todoTitle" type="text" value={this.state.todoTitle} onKeyUp={this.handleInputKeyUp} onChange={this.objectOnChanged} onFocus={this.handleTitleOnFocus} onBlur={this.handleInputOnBlur} />
                 <span className="todoDelete" onClick={this.handleTodoDelete}>&#x274c;</span>
             </li>
         );
@@ -245,10 +243,12 @@ class NewTodo extends React.Component {
     render() {
         return (
             <div className="newTodo">
-                <input type="text" placeholder="請輸入待辦事項" name="todoTitle" value={this.state.todoTitle} onChange={this.handleDataChange} onKeyUp={this.handleInputKeyUp} />
                 <input type="checkbox" name="isDone" checked={this.state.isDone} onChange={this.handleDataChange} />
-                <button onClick={this.handleSendClick}>送出</button>
-                <button onClick={this.handleClearClick}>Clear</button>
+                <input type="text" placeholder="請輸入待辦事項" className="todoTitle" name="todoTitle" value={this.state.todoTitle} onChange={this.handleDataChange} onKeyUp={this.handleInputKeyUp} />
+                <div className="newTodoBottom">
+                    <button onClick={this.handleSendClick}>送出</button>
+                    <button onClick={this.handleClearClick}>清除</button>
+                </div>
             </div>
         );
     }
@@ -292,7 +292,7 @@ class TodoBox extends React.Component {
     render() {
         return (
             <div className="todoApp">
-                <h1>Todo List</h1>
+                <h1 className="todoTitle">Todo List</h1>
                 <Todo apiUrl={this.props.apiUrl} data={this.state.data} onDelete={this.onDelete} />
                 <NewTodo apiUrl={this.props.apiUrl} onSent={this.onTodoAdded} />
             </div>

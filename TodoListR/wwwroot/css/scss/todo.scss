@@ -1,0 +1,97 @@
+﻿//scss
+$color-white: #fff;
+$color-todo-item-border: #555;
+$font-title: sans-serif;
+$font-family-default: Microsoft JhengHei,sans-serif;
+$font-size-default: 14px;
+$color-background: #fff;
+$radius: 5px;
+$todo-item-vertical-interval: 5px;
+
+@mixin border-radius($radius) {
+    -webkit-border-radius: $radius;
+    -moz-border-radius: $radius;
+    -ms-border-radius: $radius;
+    border-radius: $radius;
+}
+
+html, body {
+    background-color: $color-background;
+    font-family: $font-family-default;
+    font-size: $font-size-default;
+}
+
+#content {
+    width: 400px;
+    margin: 0 auto;
+}
+
+h1.todoTitle {
+    font-family: $font-title;
+}
+
+ul {
+    margin: 0;
+    padding: 0;
+
+    &.todo {
+        li {
+            list-style: none;
+
+            &.todoItem {
+                margin-bottom: $todo-item-vertical-interval;
+            }
+
+            &:last-child {
+                > input.todoTitle {
+                    border-bottom: 2px solid $color-todo-item-border;
+                }
+            }
+        }
+    }
+}
+
+input[type="checkbox"] {
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+.todoDelete {
+    @extend input[type="checkbox"];
+}
+
+button {
+    @extend input[type="checkbox"];
+    min-width: 50px;
+    min-height: 30px;
+    @include border-radius($radius);
+
+    &:focus {
+        outline: none;
+    }
+}
+
+input {
+    &.todoTitle {
+        border: none;
+        border-bottom: 1px dotted $color-todo-item-border;
+        font-size: $font-size-default;
+        width: 300px;
+
+        &:focus {
+            outline: none;
+        }
+    }
+}
+
+div {
+    &.newTodoBottom {
+        margin-top: $todo-item-vertical-interval;
+        align-content: center;
+
+        > button {
+            margin: $todo-item-vertical-interval;
+        }
+    }
+}
